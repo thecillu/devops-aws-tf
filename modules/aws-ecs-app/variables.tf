@@ -1,6 +1,7 @@
 variable "aws_region" {
   description = "The AWS region to deploy the VPC"
   type        = string
+  default     = "eu-central-1"
 }
 
 variable "service_name" {
@@ -15,19 +16,35 @@ variable "environment" {
 variable vpc_cidr {
   description = "The CIDR block for the VPC"
   type        = string
+  default     = "192.168.0.0/16"
 }
 
-variable "public_subnets" {
-  description = "List of CIDR blocks for public subnets"
-  type        = list(string)
+variable app_port {
+  description = "The CIDR block for the VPC"
+  type        = number
+  default     =  3000
 }
 
-variable "private_subnets" {
-  description = "List of CIDR blocks for public subnets"
-  type        = list(string)
+variable app_image {
+  description = "The CIDR block for the VPC"
+  type        = string
+  default     = "duplocloud/nodejs-hello"
 }
 
-variable "availability_zones" {
-  description = "List of availability zones to be used for the subnets"
-  type        = list(string)
+
+variable app_fargate_cpu {
+  description = "The amount of Fargate CPU to use"
+  type        = string
+  default     = "256"
+}
+
+variable app_fargate_memory {
+  description = "The amount of Fargate memory to use"
+  type        = string
+  default     = "512"
+}
+variable app_count {
+  description = "The number of Fargate tasks to run"
+  type        = number
+  default     = 1
 }

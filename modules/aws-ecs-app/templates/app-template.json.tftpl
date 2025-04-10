@@ -1,0 +1,23 @@
+[
+  {
+    "name": "${service_name}",
+    "image": "${app_image}",
+    "cpu": ${app_fargate_cpu},
+    "memory": ${app_fargate_memory},
+    "networkMode": "awsvpc",
+    "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/${service_name}",
+          "awslogs-region": "${aws_region}",
+          "awslogs-stream-prefix": "ecs-${service_name}"
+        }
+    },
+    "portMappings": [
+      {
+        "containerPort": ${app_port},
+        "hostPort": ${app_port}
+      }
+    ]
+  }
+]
