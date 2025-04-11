@@ -5,13 +5,13 @@ resource "aws_cloudfront_origin_access_identity" "origin_access_identity" {
 resource "aws_cloudfront_distribution" "cdn_distribution" {
 
   origin {
-    domain_name = aws_alb.alb.dns_name
-    origin_id   = "${var.service_name}-origin"
+    domain_name = "alb.${var.service_name}.${var.environment}.${data.aws_route53_zone.provided-zone.name}"
+    origin_id   = "${local.service_env_name}-origin"
 
     custom_origin_config {
       http_port              = 80
-      https_port             = 80
-      origin_protocol_policy = "http-only"
+      https_port             = 443
+      origin_protocol_policy = "https-only"
       origin_ssl_protocols   = ["TLSv1.2"]
     }
 
@@ -32,12 +32,12 @@ resource "aws_cloudfront_distribution" "cdn_distribution" {
   }
 
   enabled = true
-  #aliases                           = ["${var.service_name}.${var.environment}.scalapay.com"]
+  aliases                           = ["${var.service_name}.${var.environment}.${data.aws_route53_zone.provided-zone.name}"]
 
   default_cache_behavior {
     allowed_methods  = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
     cached_methods   = ["HEAD", "GET"]
-    target_origin_id = "${var.service_name}-origin"
+    target_origin_id = "${local.service_env_name}-origin"
 
     forwarded_values {
       query_string = true
@@ -60,13 +60,13 @@ resource "aws_cloudfront_distribution" "cdn_distribution" {
   }
 
   viewer_certificate {
-    cloudfront_default_certificate = true
+    #cloudfront_default_certificate = true
     ssl_support_method             = "sni-only"
-    #acm_certificate_arn           = "${data.aws_acm_certificate.certificate.arn}"
+    acm_certificate_arn           = "${aws_acm_certificate.cdn-acm-certificate.arn}"
   }
 
   tags = {
-    Name        = "${var.service_name}-cdn"
+    Name        = "${local.service_env_name}-cdn"
     Environment = var.environment
   }
 }

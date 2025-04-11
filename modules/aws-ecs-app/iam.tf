@@ -23,7 +23,7 @@ resource "aws_iam_role" "ecs-task-execution-role" {
   assume_role_policy = data.aws_iam_policy_document.iam-policy-document.json
 
   tags = {
-    Name        = "${var.service_name}-TaskExecutionRole"
+    Name        = "${local.service_env_name}-TaskExecutionRole"
     Environment = var.environment
   }
 }
@@ -39,6 +39,7 @@ data "aws_elb_service_account" "elb_identity" {}
 
 resource "aws_s3_bucket" "bucket_logs" {
   bucket = "${var.service_name}-${var.environment}-logs"
+  force_destroy = true
 }
 
 resource "aws_s3_bucket_policy" "s3_bucket_policy" {

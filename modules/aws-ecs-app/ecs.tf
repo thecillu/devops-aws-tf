@@ -2,22 +2,30 @@
  * Creates an ECS cluster, task definition, and service for a Fargate application.
  */
 resource "aws_ecs_cluster" "ecs-cluster" {
-  name = "${var.service_name}-ecs-cluster"
+  name = "${local.service_env_name}-ecs-cluster"
   tags = {
-    Name        = "${var.service_name}-ecs-cluster"
+    Name        = "${local.service_env_name}-ecs-cluster"
+    Environment = var.environment
+  }
+}
+
+resource "aws_cloudwatch_log_group" "ecs-log-group" {
+  name = "/ecs/${local.service_env_name}"
+  tags = {
+    Name        = "${local.service_env_name}-ecs-log-group"
     Environment = var.environment
   }
 }
 
 resource "aws_ecs_task_definition" "app-task-definition" {
-  family                   = "${var.service_name}-app-task"
+  family                   = "${local.service_env_name}-app-task"
   execution_role_arn       = aws_iam_role.ecs-task-execution-role.arn
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
   cpu                      = var.app_fargate_cpu
   memory                   = var.app_fargate_memory
   container_definitions = templatefile("${path.module}/templates/app-template.json.tftpl", {
-    service_name       = var.service_name
+    service_name       = local.service_env_name
     app_image          = var.app_image
     app_port           = var.app_port
     app_fargate_cpu    = var.app_fargate_cpu
@@ -26,13 +34,13 @@ resource "aws_ecs_task_definition" "app-task-definition" {
   })
 
   tags = {
-    Name        = "${var.service_name}-app-task"
+    Name        = "${local.service_env_name}-app-task"
     Environment = var.environment
   }
 }
 
 resource "aws_ecs_service" "app-ecs-service" {
-  name            = "${var.service_name}-ecs-service"
+  name            = "${local.service_env_name}-ecs-service"
   cluster         = aws_ecs_cluster.ecs-cluster.id
   task_definition = aws_ecs_task_definition.app-task-definition.arn
   desired_count   = var.app_count
@@ -46,14 +54,14 @@ resource "aws_ecs_service" "app-ecs-service" {
 
   load_balancer {
     target_group_arn = aws_alb_target_group.alb-target-group.arn
-    container_name   = var.service_name
+    container_name   = local.service_env_name
     container_port   = var.app_port
   }
 
   depends_on = [aws_alb_listener.alb-listener-http]
 
   tags = {
-    Name        = "${var.service_name}-ecs-service"
+    Name        = "${local.service_env_name}-ecs-service"
     Environment = var.environment
   }
 }

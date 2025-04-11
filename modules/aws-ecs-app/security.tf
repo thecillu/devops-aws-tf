@@ -11,12 +11,12 @@ data "aws_ec2_managed_prefix_list" "cloudfront-origin-prefix-list" {
 }
 
 resource "aws_security_group" "alb-security-group" {
-  name        = "${var.service_name}-alb-security-group"
-  description = "Security group for ${var.service_name} alb"
+  name        = "${local.service_env_name}-alb-security-group"
+  description = "Security group for ${local.service_env_name} alb"
   vpc_id      = aws_vpc.vpc.id
 
 
-  /*dynamic "ingress" {
+  dynamic "ingress" {
     for_each = data.aws_ec2_managed_prefix_list.cloudfront-origin-prefix-list.entries
     content {
       protocol    = "tcp"
@@ -24,8 +24,12 @@ resource "aws_security_group" "alb-security-group" {
       to_port     = 443
       cidr_blocks = [ingress.value["cidr"]]
     }
-  }*/
+  }
 
+  /* 
+   * This line is commented out because if we add prefix list entries for both http and https ports 
+   * it will exceed the maximum number of rules allowed in a security group.
+  
   dynamic "ingress" {
     for_each = data.aws_ec2_managed_prefix_list.cloudfront-origin-prefix-list.entries
     content {
@@ -35,6 +39,8 @@ resource "aws_security_group" "alb-security-group" {
       cidr_blocks = [ingress.value["cidr"]]
     }
   }
+*/
+
   egress {
     protocol    = "-1"
     from_port   = 0
@@ -43,14 +49,14 @@ resource "aws_security_group" "alb-security-group" {
   }
 
   tags = {
-    Name        = "${var.service_name}-alb-security-group"
+    Name        = "${local.service_env_name}-alb-security-group"
     Environment = var.environment
   }
 }
 
 # Traffic to the ECS cluster should only come from the ALB
 resource "aws_security_group" "ecs-security-group" {
-  name        = "${var.service_name}-ecs-security-group"
+  name        = "${local.service_env_name}-ecs-security-group"
   description = "Allow inbound access from the ALB only"
   vpc_id      = aws_vpc.vpc.id
 
@@ -69,7 +75,7 @@ resource "aws_security_group" "ecs-security-group" {
   }
 
   tags = {
-    Name        = "${var.service_name}-ecs-security-group"
+    Name        = "${local.service_env_name}-ecs-security-group"
     Environment = var.environment
   }
 }

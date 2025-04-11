@@ -31,7 +31,6 @@ variable "app_image" {
   default     = "duplocloud/nodejs-hello"
 }
 
-
 variable "app_fargate_cpu" {
   description = "The amount of Fargate CPU to use"
   type        = string
@@ -67,3 +66,11 @@ variable "cdn_secret_header" {
   sensitive   = true
 }
 
+variable "zone_id" {
+  description = "Route53 zone ID"
+  type        = string
+}
+
+locals {
+  service_env_name = "${var.service_name}-${var.environment}"
+}
