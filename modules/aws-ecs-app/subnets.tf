@@ -1,5 +1,10 @@
-####### Public Subnets #######
-
+/* 
+ * Create public and private subnets in a VPC
+ * with an Internet Gateway and 1 NAT Gateway for each public network. 
+ * Creates also route tables and associates them with the subnets.
+ * Public subnets are used for the ALB and NAT Gateways, 
+ * while private subnets are used for the ECS cluster. 
+*/
 resource "aws_subnet" "public_subnet" {
   count = length(data.aws_availability_zones.availability_zones.names)
   vpc_id = aws_vpc.vpc.id

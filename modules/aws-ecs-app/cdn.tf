@@ -16,16 +16,20 @@ resource "aws_cloudfront_distribution" "cdn_distribution" {
         }
 
         custom_header {
-            name  = "foo"
-            value = "bar"
+            name  = "x-cdn-secret"
+            value = "${var.cdn_secret_header}"
         }
     }
 
-    logging_config {
-        include_cookies = false
-        bucket = aws_s3_bucket.bucket_logs.bucket_domain_name
-        prefix          = "cdn/"
-     }
+    dynamic "logging_config" {
+        for_each = var.cdn_logging_enabled ==  true ? ["enabled"] : []
+        content {
+            include_cookies = false
+            bucket         = aws_s3_bucket.bucket_logs.bucket_domain_name
+            prefix         = "cdn/"
+        }
+        
+    }
 
     enabled                           = true
     #aliases                           = ["${var.service_name}.${var.environment}.scalapay.com"]

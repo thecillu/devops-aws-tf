@@ -1,5 +1,4 @@
-data "aws_availability_zones" "availability_zones" {
-}
+data "aws_availability_zones" "availability_zones" {}
 
 resource "aws_vpc" "vpc" {
   cidr_block = var.vpc_cidr

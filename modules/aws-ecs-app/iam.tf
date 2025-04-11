@@ -1,4 +1,8 @@
-# ECS task execution role data
+/*
+  Creates the IAM roles and policies required for ECS tasks and services.
+  It also creates an S3 bucket for logging and sets up the necessary permissions for ALB and CloudFront to write logs to the bucket.
+*/
+
 data "aws_iam_policy_document" "iam-policy-document" {
   version = "2012-10-17"
   statement {
@@ -69,10 +73,10 @@ data "aws_iam_policy_document" "s3_bucket_logs_write" {
   }
 }
 
-/* Enable Access to Bucket Logs for CloudFront
-by documentation:
-The bucket must have correct ACL attached with "FULL_CONTROL" permission for "awslogsdelivery" account 
-(Canonical ID: "c4c1ede66af53448b93c283ce9448c4ba468c9432aa01d700d3878632f77d2d0") for log transfer to work.
+/* 
+ * Enable Access to Bucket Logs for CloudFront by documentation:
+ * 'The bucket must have correct ACL attached with "FULL_CONTROL" permission for "awslogsdelivery" account 
+ * (Canonical ID: "c4c1ede66af53448b93c283ce9448c4ba468c9432aa01d700d3878632f77d2d0") for log transfer to work.'
 */
 
 data "aws_canonical_user_id" "current" {}
@@ -96,56 +100,6 @@ resource "aws_s3_bucket_acl" "example" {
     owner {
       id = data.aws_canonical_user_id.current.id
     }
-    grant {
-      grantee {
-        type = "Group"
-        uri  = "http://acs.amazonaws.com/groups/s3/LogDelivery"
-      }
-      permission = "READ_ACP"
-    }
   }
-
   depends_on = [ aws_s3_bucket_ownership_controls.ownership_controls ]
 }
-
-  /*statement {
-    actions = [
-      "s3:PutObject",
-      "s3:GetBucketAcl"
-    ]
-    effect = "Allow"
-    resources = [
-      "${aws_s3_bucket.bucket_logs.arn}",
-      "${aws_s3_bucket.bucket_logs.arn}/*"
-    ]
-    principals {
-      identifiers = ["delivery.logs.amazonaws.com"]
-      type        = "Service"
-    }
-    
-  }
-
-  statement {
-    actions = [
-      "s3:GetBucketAcl"
-    ]
-    effect = "Allow"
-    resources = [
-      "${aws_s3_bucket.bucket_logs.arn}",
-      "${aws_s3_bucket.bucket_logs.arn}/*"
-    ]
-    principals {
-      identifiers = ["delivery.logs.amazonaws.com"]
-      type        = "Service"
-    }
-  }
-}
-/*#####  CDN Log bucket permissions #####
-resource "aws_s3_bucket" "cdn_logs" {
-  bucket = "${var.service_name}-${var.environment}-cdn-logs"
-}
-resource "aws_s3_bucket_policy" "cdn_logs" {
-  bucket = aws_s3_bucket.cdn_logs.id
-  policy = "${data.aws_iam_policy_document.s3_bucket_cdn_write.json}"
-}
-*/

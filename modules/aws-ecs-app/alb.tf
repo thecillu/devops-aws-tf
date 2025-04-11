@@ -1,14 +1,18 @@
+/*
+  This creates an Application Load Balancer (ALB) with a target group and listener rules.
+  It also includes HTTPS configuration and Route 53 DNS records for the ALB.
+*/
+
 resource "aws_alb" "alb" {
   name            = "${var.service_name}-alb"
   subnets         = aws_subnet.public_subnet.*.id
   security_groups = [aws_security_group.alb-security-group.id]
 
-
   #### TOOD rendere opzionale
   access_logs {
       bucket  = aws_s3_bucket.bucket_logs.id
       prefix  = "alb"
-      enabled = true
+      enabled = var.alb_logging_enabled
   }
   tags = {
     Name        = "${var.service_name}-alb"
@@ -40,8 +44,14 @@ resource "aws_alb_listener" "alb-listener-http" {
   port               = 80
 
   default_action {
-    type = "forward"
-    target_group_arn = aws_alb_target_group.alb-target-group.arn
+    #type = "forward"
+    #target_group_arn = aws_alb_target_group.alb-target-group.arn
+
+    type = "fixed-response"
+    fixed_response {
+      content_type = "text/plain"
+      status_code  = "403"
+    }
 
     #type = "redirect"
     #redirect {
@@ -49,25 +59,64 @@ resource "aws_alb_listener" "alb-listener-http" {
     #  protocol    = "HTTPS"
     #  status_code = "HTTP_301"
     #}
+    
   }
 }
 
 
+resource "aws_lb_listener_rule" "alb-listener-http-cdn-header-rule" {
+  listener_arn = aws_alb_listener.alb-listener-http.arn
+  priority     = 100
+  action {
+    type = "forward"
+    target_group_arn = aws_alb_target_group.alb-target-group.arn
+  }
+
+  condition {
+    http_header {
+      http_header_name = "x-cdn-secret"
+      values          = [var.cdn_secret_header]
+    }
+  }
+}
+
 
 ## ENABLE HTTPS
-
-/*resource "aws_alb_listener" "alb-listener-https" {
+/*
+resource "aws_alb_listener" "alb-listener-https" {
 load_balancer_arn = aws_alb.alb.arn
   protocol           = "HTTPS"
   port               = 443
   certificate_arn = aws_acm_certificate.cert.arn
   
   default_action {
-    type = "forward"
-    target_group_arn = aws_alb_target_group.alb-target-group.arn
+    type = "fixed-response"
+    fixed_response {
+      content_type = "text/plain"
+      status_code  = "403"
+    }
   }
 }
 
+resource "aws_lb_listener_rule" "alb-listener-https-cdn-header-rule" {
+  listener_arn = aws_alb_listener.alb-listener-https.arn
+  priority     = 100
+
+  action {
+    type = "forward"
+    target_group_arn = aws_alb_target_group.alb-target-group.arn
+  }
+
+  condition {
+    http_header {
+      http_header_name = "x-cdn-secret"
+      values          = [var.cdn_secret_header]
+    }
+  }
+}
+
+
+//TODO provided
 resource "aws_route53_zone" "route53-zone" {
   name = "${var.service_name}.${var.environment}.scalapay.com"
 
@@ -110,4 +159,5 @@ resource "aws_route53_record" "example" {
   ttl             = 60
   type            = each.value.type
   zone_id         = aws_route53_zone.route53-zone.zone_id
-}*/
+}
+*/

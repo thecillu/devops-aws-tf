@@ -48,3 +48,22 @@ variable app_count {
   type        = number
   default     = 1
 }
+
+variable alb_logging_enabled {
+  description = "Enable ALB logging"
+  type        = bool
+  default     = false
+}
+
+variable cdn_logging_enabled {
+  description = "Enable CDN logging"
+  type        = bool
+  default     = false
+}
+
+variable cdn_secret_header {
+  description = "Secret header for CDN"
+  type        = string
+  sensitive = true
+}
+
