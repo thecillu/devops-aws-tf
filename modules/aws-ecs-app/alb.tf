@@ -3,6 +3,13 @@ resource "aws_alb" "alb" {
   subnets         = aws_subnet.public_subnet.*.id
   security_groups = [aws_security_group.alb-security-group.id]
 
+
+  #### TOOD rendere opzionale
+  access_logs {
+      bucket  = aws_s3_bucket.bucket_logs.id
+      prefix  = "alb"
+      enabled = true
+  }
   tags = {
     Name        = "${var.service_name}-alb"
     Environment = var.environment
@@ -33,50 +40,74 @@ resource "aws_alb_listener" "alb-listener-http" {
   port               = 80
 
   default_action {
-    type = "redirect"
-    redirect {
-      protocol = "HTTPS"
-      port     = "443"
-      status_code = "HTTP_301"
-    }
+    type = "forward"
+    target_group_arn = aws_alb_target_group.alb-target-group.arn
+
+    #type = "redirect"
+    #redirect {
+    #  port        = "443"
+    #  protocol    = "HTTPS"
+    #  status_code = "HTTP_301"
+    #}
   }
 }
 
-resource "aws_alb_listener" "alb-listener-https" {
+
+
+## ENABLE HTTPS
+
+/*resource "aws_alb_listener" "alb-listener-https" {
 load_balancer_arn = aws_alb.alb.arn
   protocol           = "HTTPS"
   port               = 443
-  certificate_arn = aws_acm_certificate.example.arn
+  certificate_arn = aws_acm_certificate.cert.arn
   
   default_action {
     type = "forward"
     target_group_arn = aws_alb_target_group.alb-target-group.arn
   }
-
 }
 
-# Create a self-signed certificate using the TLS provider
- resource "tls_private_key" "alb-cert-private-key" {
-        algorithm = "RSA"
-        rsa_bits = 2048    
+resource "aws_route53_zone" "route53-zone" {
+  name = "${var.service_name}.${var.environment}.scalapay.com"
+
+  tags = {
+    Name        = "${var.service_name}-route53-zone"
+    Environment = var.environment
   }
-
-  resource "tls_self_signed_cert" "alb-self-signed-cert" {
-        private_key_pem = tls_private_key.alb-cert-private-key.private_key_pem
-        subject {
-          common_name = "alb.example.${var.environment}.scalapay.com"
-        }
-        validity_period_hours = 8760
-        allowed_uses = [
-          "key_encipherment",
-          "digital_signature",
-          "server_auth",
-        ]
-        dns_names = ["alb.example.${var.environment}.scalapay.com"]
-  }
-
-
-resource "aws_acm_certificate" "example" {
-  private_key      = tls_private_key.alb-cert-private-key.private_key_pem
-  certificate_body = tls_self_signed_cert.alb-self-signed-cert.cert_pem
 }
+
+resource "aws_route53_record" "alb_alias_record" {
+  zone_id = aws_route53_zone.route53-zone.zone_id
+  name    = "alb.${var.service_name}.${var.environment}.scalapay.com"
+  ttl     = 300
+  type    = "CNAME"
+  records = [aws_alb.alb.dns_name]
+}
+
+resource "aws_acm_certificate" "cert" {
+  domain_name       = "alb.${var.service_name}.${var.environment}.scalapay.com"
+  validation_method = "DNS"
+
+  validation_option {
+    domain_name       = "alb.${var.service_name}.${var.environment}.scalapay.com"
+    validation_domain = "scalapay.com"
+  }
+}
+
+resource "aws_route53_record" "example" {
+  for_each = {
+    for dvo in aws_acm_certificate.cert.domain_validation_options : dvo.domain_name => {
+      name   = dvo.resource_record_name
+      record = dvo.resource_record_value
+      type   = dvo.resource_record_type
+    }
+  }
+
+  allow_overwrite = true
+  name            = each.value.name
+  records         = [each.value.record]
+  ttl             = 60
+  type            = each.value.type
+  zone_id         = aws_route53_zone.route53-zone.zone_id
+}*/
