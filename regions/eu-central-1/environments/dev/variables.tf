@@ -3,3 +3,9 @@ variable "aws_region" {
   type        = string
   default     = "eu-central-1"
 }
+
+variable cdn_secret_header {
+  description = "Secret header for CDN"
+  type        = string
+  sensitive = true
+}
