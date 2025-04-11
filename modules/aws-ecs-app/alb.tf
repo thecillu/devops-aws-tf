@@ -10,9 +10,9 @@ resource "aws_alb" "alb" {
 
   #### TOOD rendere opzionale
   access_logs {
-      bucket  = aws_s3_bucket.bucket_logs.id
-      prefix  = "alb"
-      enabled = var.alb_logging_enabled
+    bucket  = aws_s3_bucket.bucket_logs.id
+    prefix  = "alb"
+    enabled = var.alb_logging_enabled
   }
   tags = {
     Name        = "${var.service_name}-alb"
@@ -40,8 +40,8 @@ resource "aws_alb_target_group" "alb-target-group" {
 
 resource "aws_alb_listener" "alb-listener-http" {
   load_balancer_arn = aws_alb.alb.arn
-  protocol           = "HTTP"
-  port               = 80
+  protocol          = "HTTP"
+  port              = 80
 
   default_action {
     #type = "forward"
@@ -59,7 +59,7 @@ resource "aws_alb_listener" "alb-listener-http" {
     #  protocol    = "HTTPS"
     #  status_code = "HTTP_301"
     #}
-    
+
   }
 }
 
@@ -68,14 +68,14 @@ resource "aws_lb_listener_rule" "alb-listener-http-cdn-header-rule" {
   listener_arn = aws_alb_listener.alb-listener-http.arn
   priority     = 100
   action {
-    type = "forward"
+    type             = "forward"
     target_group_arn = aws_alb_target_group.alb-target-group.arn
   }
 
   condition {
     http_header {
       http_header_name = "x-cdn-secret"
-      values          = [var.cdn_secret_header]
+      values           = [var.cdn_secret_header]
     }
   }
 }

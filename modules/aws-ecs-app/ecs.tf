@@ -3,10 +3,10 @@
  */
 resource "aws_ecs_cluster" "ecs-cluster" {
   name = "${var.service_name}-ecs-cluster"
-    tags = {
-        Name        = "${var.service_name}-ecs-cluster"
-        Environment = var.environment
-    }
+  tags = {
+    Name        = "${var.service_name}-ecs-cluster"
+    Environment = var.environment
+  }
 }
 
 resource "aws_ecs_task_definition" "app-task-definition" {
@@ -16,19 +16,19 @@ resource "aws_ecs_task_definition" "app-task-definition" {
   requires_compatibilities = ["FARGATE"]
   cpu                      = var.app_fargate_cpu
   memory                   = var.app_fargate_memory
-  container_definitions    = templatefile("${path.module}/templates/app-template.json.tftpl", {
-                                service_name   = var.service_name
-                                app_image      = var.app_image
-                                app_port       = var.app_port
-                                app_fargate_cpu    = var.app_fargate_cpu
-                                app_fargate_memory = var.app_fargate_memory
-                                aws_region     = var.aws_region
-                            })
+  container_definitions = templatefile("${path.module}/templates/app-template.json.tftpl", {
+    service_name       = var.service_name
+    app_image          = var.app_image
+    app_port           = var.app_port
+    app_fargate_cpu    = var.app_fargate_cpu
+    app_fargate_memory = var.app_fargate_memory
+    aws_region         = var.aws_region
+  })
 
-    tags = {
-        Name        = "${var.service_name}-app-task"
-        Environment = var.environment
-    }
+  tags = {
+    Name        = "${var.service_name}-app-task"
+    Environment = var.environment
+  }
 }
 
 resource "aws_ecs_service" "app-ecs-service" {
@@ -46,14 +46,14 @@ resource "aws_ecs_service" "app-ecs-service" {
 
   load_balancer {
     target_group_arn = aws_alb_target_group.alb-target-group.arn
-    container_name   = "${var.service_name}"
+    container_name   = var.service_name
     container_port   = var.app_port
   }
 
   depends_on = [aws_alb_listener.alb-listener-http]
 
   tags = {
-        Name        = "${var.service_name}-ecs-service"
-        Environment = var.environment
-    }
+    Name        = "${var.service_name}-ecs-service"
+    Environment = var.environment
+  }
 }

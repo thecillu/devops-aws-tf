@@ -10,7 +10,6 @@ data "aws_ec2_managed_prefix_list" "cloudfront-origin-prefix-list" {
   }
 }
 
-
 resource "aws_security_group" "alb-security-group" {
   name        = "${var.service_name}-alb-security-group"
   description = "Security group for ${var.service_name} alb"
@@ -27,7 +26,7 @@ resource "aws_security_group" "alb-security-group" {
     }
   }*/
 
-    dynamic "ingress" {
+  dynamic "ingress" {
     for_each = data.aws_ec2_managed_prefix_list.cloudfront-origin-prefix-list.entries
     content {
       protocol    = "tcp"
@@ -43,10 +42,10 @@ resource "aws_security_group" "alb-security-group" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-    tags = {
-        Name        = "${var.service_name}-alb-security-group"
-        Environment = var.environment
-    }
+  tags = {
+    Name        = "${var.service_name}-alb-security-group"
+    Environment = var.environment
+  }
 }
 
 # Traffic to the ECS cluster should only come from the ALB
@@ -69,8 +68,8 @@ resource "aws_security_group" "ecs-security-group" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-    tags = {
-        Name        = "${var.service_name}-ecs-security-group"
-        Environment = var.environment
-    }
+  tags = {
+    Name        = "${var.service_name}-ecs-security-group"
+    Environment = var.environment
+  }
 }

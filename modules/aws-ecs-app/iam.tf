@@ -6,8 +6,8 @@
 data "aws_iam_policy_document" "iam-policy-document" {
   version = "2012-10-17"
   statement {
-    sid = ""
-    effect = "Allow"
+    sid     = ""
+    effect  = "Allow"
     actions = ["sts:AssumeRole"]
 
     principals {
@@ -19,18 +19,18 @@ data "aws_iam_policy_document" "iam-policy-document" {
 
 # ECS task execution role
 resource "aws_iam_role" "ecs-task-execution-role" {
-  name = "${var.service_name}-TaskExecutionRole"
+  name               = "${var.service_name}-TaskExecutionRole"
   assume_role_policy = data.aws_iam_policy_document.iam-policy-document.json
 
   tags = {
-    Name = "${var.service_name}-TaskExecutionRole"
+    Name        = "${var.service_name}-TaskExecutionRole"
     Environment = var.environment
   }
 }
 
 # ECS task execution role policy attachment
 resource "aws_iam_role_policy_attachment" "iam_role_policy_attachment" {
-  role = aws_iam_role.ecs-task-execution-role.name
+  role       = aws_iam_role.ecs-task-execution-role.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
@@ -43,7 +43,7 @@ resource "aws_s3_bucket" "bucket_logs" {
 
 resource "aws_s3_bucket_policy" "s3_bucket_policy" {
   bucket = aws_s3_bucket.bucket_logs.id
-  policy = "${data.aws_iam_policy_document.s3_bucket_logs_write.json}"
+  policy = data.aws_iam_policy_document.s3_bucket_logs_write.json
 }
 
 data "aws_iam_policy_document" "s3_bucket_logs_write" {
@@ -87,7 +87,7 @@ resource "aws_s3_bucket_ownership_controls" "ownership_controls" {
     object_ownership = "BucketOwnerPreferred"
   }
 }
-resource "aws_s3_bucket_acl" "example" { 
+resource "aws_s3_bucket_acl" "example" {
   bucket = aws_s3_bucket.bucket_logs.id
   access_control_policy {
     grant {
@@ -101,5 +101,5 @@ resource "aws_s3_bucket_acl" "example" {
       id = data.aws_canonical_user_id.current.id
     }
   }
-  depends_on = [ aws_s3_bucket_ownership_controls.ownership_controls ]
+  depends_on = [aws_s3_bucket_ownership_controls.ownership_controls]
 }
