@@ -10,6 +10,21 @@ All notable changes to this project will be documented in this file.
 
 ### Removed
 
+## [0.1-beta] - 2024-04-12
+
+### Added
+
+- Added Custom Domains for ALB and CDN
+- Added Certificates for Custom Domains
+
+### Fixed
+
+
+### Changed
+
+
+### Removed
+
 ## [0.1-alfa] - 2024-04-11
 
 ### Added
@@ -31,3 +46,4 @@ All notable changes to this project will be documented in this file.
 ### Removed
 
 [v0.1-alfa] https://github.com/thecillu/devops-aws-tf/releases/tag/v0.1-alfa
+[v0.1-beta] https://github.com/thecillu/devops-aws-tf/compare/v0.1-alfa...v0.1-beta
