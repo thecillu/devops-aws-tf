@@ -30,4 +30,4 @@ All notable changes to this project will be documented in this file.
 
 ### Removed
 
-# [v0.1-alfa] https://github.com/thecillu/devops-aws-tf/releases/tag/v0.1-alfa
+[v0.1-alfa] https://github.com/thecillu/devops-aws-tf/releases/tag/v0.1-alfa
