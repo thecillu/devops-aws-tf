@@ -10,7 +10,7 @@ All notable changes to this project will be documented in this file.
 
 ### Removed
 
-## [0.1-beta] - 2024-04-12
+## [v0.1-beta] - 2024-04-12
 
 ### Added
 
@@ -25,7 +25,7 @@ All notable changes to this project will be documented in this file.
 
 ### Removed
 
-## [0.1-alfa] - 2024-04-11
+## [v0.1-alfa] - 2024-04-11
 
 ### Added
 
@@ -45,5 +45,5 @@ All notable changes to this project will be documented in this file.
 
 ### Removed
 
-[v0.1-alfa] https://github.com/thecillu/devops-aws-tf/releases/tag/v0.1-alfa
-[v0.1-beta] https://github.com/thecillu/devops-aws-tf/compare/v0.1-alfa...v0.1-beta
+[v0.1-alfa]: https://github.com/thecillu/devops-aws-tf/releases/tag/v0.1-alfa
+[v0.1-beta]: https://github.com/thecillu/devops-aws-tf/compare/v0.1-alfa...v0.1-beta
