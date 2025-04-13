@@ -42,8 +42,8 @@ resource "aws_cloudfront_distribution" "cdn_distribution" {
     target_origin_id       = "${local.service_env_name}-origin"
     viewer_protocol_policy = "https-only"
     min_ttl                = 0
-    default_ttl            = 3600
-    max_ttl                = 86400
+    default_ttl            = 30
+    max_ttl                = 60
     forwarded_values {
       query_string = true
       headers      = ["*"]

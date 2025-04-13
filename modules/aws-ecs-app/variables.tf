@@ -28,7 +28,13 @@ variable "app_port" {
 variable "app_image" {
   description = "The CIDR block for the VPC"
   type        = string
-  default     = "duplocloud/nodejs-hello"
+  default     = "cillu/nodejs-app:1.0.0"
+}
+
+variable "app_secret_parameter" {
+  description = "The App secret parameter"
+  type        = string
+  sensitive   = true
 }
 
 variable "app_fargate_cpu" {

@@ -10,6 +10,22 @@ All notable changes to this project will be documented in this file.
 
 ### Removed
 
+## [v0.2.0] - 2024-04-13
+
+### Added
+
+- Added the parameters store integration in ECS Task definition
+- Saved the secret string in parameter store
+
+### Fixed
+
+### Changed
+
+- Moved to a default Custom image (cillu/nodejs-app:1.0.0)
+- Updated the README file
+
+### Removed
+
 ## [v0.1.0] - 2024-04-13
 
 ### Added

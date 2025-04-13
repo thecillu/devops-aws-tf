@@ -31,6 +31,7 @@ resource "aws_ecs_task_definition" "app-task-definition" {
     app_fargate_cpu    = var.app_fargate_cpu
     app_fargate_memory = var.app_fargate_memory
     aws_region         = var.aws_region
+    app_secret_parameter_arn = aws_ssm_parameter.app_secret_parameter.arn
   })
 
   tags = {
@@ -45,7 +46,7 @@ resource "aws_ecs_service" "app-ecs-service" {
   task_definition = aws_ecs_task_definition.app-task-definition.arn
   desired_count   = var.app_count
   launch_type     = "FARGATE"
-
+  force_new_deployment = true
   network_configuration {
     security_groups  = [aws_security_group.ecs-security-group.id]
     subnets          = aws_subnet.private_subnet.*.id
@@ -56,6 +57,10 @@ resource "aws_ecs_service" "app-ecs-service" {
     target_group_arn = aws_alb_target_group.alb-target-group.arn
     container_name   = local.service_env_name
     container_port   = var.app_port
+  }
+
+  triggers = {
+    redeployment = plantimestamp()
   }
 
   depends_on = [aws_alb_listener.alb-listener-http]

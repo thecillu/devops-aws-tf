@@ -2,11 +2,13 @@
  * This file creates the IAM roles and policies required for ECS tasks and services.
  * It also creates an S3 bucket for logging and sets up the necessary permissions for ALB and CloudFront to write logs to the bucket.
 */
-data "aws_iam_policy_document" "iam-policy-document" {
+
+/* ECS task execution role with SSM read access */
+data "aws_iam_policy_document" "ecs_task_assume_role_policy" {
   version = "2012-10-17"
+
   statement {
-    sid     = ""
-    effect  = "Allow"
+    effect = "Allow"
     actions = ["sts:AssumeRole"]
 
     principals {
@@ -15,11 +17,9 @@ data "aws_iam_policy_document" "iam-policy-document" {
     }
   }
 }
-
-# ECS task execution role
 resource "aws_iam_role" "ecs-task-execution-role" {
   name               = "${var.service_name}-TaskExecutionRole"
-  assume_role_policy = data.aws_iam_policy_document.iam-policy-document.json
+  assume_role_policy = data.aws_iam_policy_document.ecs_task_assume_role_policy.json
 
   tags = {
     Name        = "${local.service_env_name}-TaskExecutionRole"
@@ -27,11 +27,35 @@ resource "aws_iam_role" "ecs-task-execution-role" {
   }
 }
 
-# ECS task execution role policy attachment
 resource "aws_iam_role_policy_attachment" "iam_role_policy_attachment" {
   role       = aws_iam_role.ecs-task-execution-role.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
+
+data "aws_iam_policy_document" "ecs_ssm_read_access" {
+  version = "2012-10-17"
+
+  statement {
+    sid    = "ReadAllSSMParams"
+    effect = "Allow"
+
+    actions = [
+      "ssm:GetParameters",
+      "ssm:GetParameter",
+      "ssm:GetParametersByPath"
+    ]
+
+    # Required: must be "*" due to AWS limitations on these actions
+    resources = ["*"]
+  }
+}
+
+resource "aws_iam_role_policy" "ecs_ssm_read_policy" {
+  name   = "ecs-ssm-read-policy"
+  role   = aws_iam_role.ecs-task-execution-role.id
+  policy = data.aws_iam_policy_document.ecs_ssm_read_access.json
+}
+
 
 /* Enable Access to Bucket Logs for ALB */
 data "aws_elb_service_account" "elb_identity" {}

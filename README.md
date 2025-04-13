@@ -18,6 +18,7 @@ The module creates the following resources:
 - **ECS Cluster**: an ECS Cluster Multi-AZ in created in the public subnets. 
   - **ECS Tasks and Service**: ECS resources are created in order to deploy the provided image 
   - **ECS Security Group**: a security group is created and assigned to the ECS Service in order to allow the traffic only from the ALB
+- **Secret string in Parameter Store**: a secret string used from the deploted node-js app
 - **Application Load Balancer**: an Multi-Az ALB is deployed in the public subnets. 
   - **ALB Listeners**: the ALB is configured with the following rules:
     - Cloudfront sends a Custom Header that contains a header with a pre-defined key. ALB deny access with an error 403 if the key doesn’t match. Otherwise it forward the request the ECS Service instances
@@ -53,10 +54,11 @@ Module Input Variables
 | service_name |  string | Yes | - | The name of the service
 | environment | string  | Yes | - | The environment (e.g., dev, staging, prod)
 | cdn_secret_header | string | Yes | - | Predefined Key for the CDN secret header
+| app_secret_parameter | string | Yes | - | Secret String used from the nodejs App (cillu/nodejs-app:1.0.0)
 | zone_id | string | Yes | - | Route53 zone ID (used to create the custome domain for CF and ALB)
 | aws_region | string | No | eu-central-1 | The target AWS region
 | vpc_cidr | string  | No | 192.168.0.0/16 | The CIDR block for the VPC
-| app_image |  string | No | duplocloud/nodejs-hello:latest | The deployed application image (on DockerHub)
+| app_image |  string | No | cillu/nodejs-app:1.0.0 | The deployed application image (on DockerHub)
 | app_port | number | No | 3000 | The deployed application port
 | app_fargate_cpu |  string | No | 256 | The amount of Fargate CPU to use
 | app_fargate_memory | string | No | 512 | The amount of Fargate memory to use
@@ -75,7 +77,10 @@ Usage
 
 Assuming:
 - you downloaded this module locally 
-- you have a secrets.tfvars file which contains the CDN secrets value (variable cdn_secret_header). (**Don't commit this file in your repository**)
+- you have a secrets.tfvars file (don't commit this file in your repository) which contain:
+  - the CDN secret value (variable cdn_secret_header)
+  - the provided zone_id
+  - the app_secret_parameter = "mysecret"
 
 
 ### Deploy a dev stack in eu-central-1
@@ -133,12 +138,13 @@ git clone https://github.com/thecillu/devops-aws-tf
 - cd to an example dir:
 cd devops-aws-tf/examples/eu-central1-dev
 
-- create the file secrets.tfvars contains your sensitive variables
+- create the file secrets.tfvars containing your sensitive variables
 
 secrets.tfvars
 ```
 cdn_secret_header = "MySecretHeader"
 zone_id = "<your-zone-id>"
+app_secret_parameter = "mysecret"
 ```
 - create the stack:
 
@@ -151,12 +157,17 @@ this will provide you the following output:
 app_https_url="https://my-service.dev.<your-zone-domain>"
 ```
 
+- Open the provided url in the browser, the app should show:
+
+![nodejs.app](./nodejs-app.png)
+
 - destroy 
 
 Remember to destroy the stack resources:
 ```bash
 terraform destroy -var-file="secrets.tfvars"
 ```
+
 
 Authors
 =======
