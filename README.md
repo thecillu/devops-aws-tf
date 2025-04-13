@@ -1,12 +1,12 @@
 # AWS ECS Fargate - Terraform module
 
 This Terraform module creates infrastructure for a public exposed application running on AWS ECS cluster using fargate deploy.
-It creates a CloudFront distribution with a Custom domain and allow only HTTPS traffic between both the clients and the CF distribution and also between the distribution and it's ALB origin.
+It creates a CloudFront distribution with a Custom domain and allow only encrypted traffic between both the clients and the CF distribution and the distribution and its ALB origin.
 
-Deployed infrastructure
+Deployed resources
 -----------------------
 
-The module will create the following resources:
+The module creates the following resources:
 
 ![AWS Architecture](./aws-ecs-fargate.png)
 
@@ -29,7 +29,6 @@ The module will create the following resources:
 - **Cloudfront**: this module create a CloudFront distribution and assign it a custom domain (*<service-name>*.*<environment>*.*<yourprovideddomain.something>*). The custom domain accepts from the clients only HTTPS connections and all the traffic forwarded to the ALB is encrypted
 - **S3 Bucket for logs**: an S3 Bucket is created to store the ALB and Clouffront logs
 - **IAM Policies**: the module creates and assign the IAM policies needed to grant Cloudfront and the ALB to delivery the log in the Bucket
-
 
 Terraform version
 -----------------
@@ -69,7 +68,7 @@ Module Input Variables
 Outputs
 =======
 
- - `cdn_custom_domain` - The app custom domain name
+ - `app_https_url` - The app custom domain name
   
 Usage
 -----
