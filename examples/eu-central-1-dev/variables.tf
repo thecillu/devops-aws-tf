@@ -26,6 +26,11 @@ variable "app_fargate_memory" {
   type        = string
   default     = "512"
 }
+variable "app_secret_parameter" {
+  description = "The App secret parameter"
+  type        = string
+  sensitive   = true
+}
 
 variable "cdn_secret_header" {
   description = "Secret header for CDN"
@@ -36,4 +41,9 @@ variable "cdn_secret_header" {
 variable "zone_id" {
   description = "Route53 zone ID"
   type        = string
+}
+variable "app_image" {
+  description = "The CIDR block for the VPC"
+  type        = string
+  default     = "cillu/nodejs-app:1.0.0"
 }
