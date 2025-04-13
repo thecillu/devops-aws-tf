@@ -1,6 +1,6 @@
 /* 
- * Creates an ECS cluster, task definition, and service for a Fargate application.
- */
+ * This file creates an ECS cluster, task definition, and service for a Fargate application.
+*/
 resource "aws_ecs_cluster" "ecs-cluster" {
   name = "${local.service_env_name}-ecs-cluster"
   tags = {

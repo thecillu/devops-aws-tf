@@ -1,6 +1,6 @@
 /*
-  It creates the security groups for the ALB and ECS cluster.
-  The ALB security group allows traffic from CloudFront and the ECS security group allows traffic from the ALB only.
+ * This file  creates the security groups for the ALB and ECS cluster.
+ * The ALB security group allows traffic from CloudFront and the ECS security group allows traffic from the ALB only.
 */
 
 data "aws_ec2_managed_prefix_list" "cloudfront-origin-prefix-list" {

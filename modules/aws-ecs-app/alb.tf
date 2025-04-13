@@ -1,6 +1,6 @@
 /*
-  This creates an Application Load Balancer (ALB) with a target group and listener rules.
-  It also includes HTTPS configuration and Route 53 DNS records for the ALB.
+ * This file creates an Application Load Balancer (ALB) with a target group and listener rules.
+ * It also includes HTTPS configuration and Route 53 DNS records for the ALB.
 */
 
 resource "aws_alb" "alb" {
@@ -54,10 +54,10 @@ resource "aws_alb_listener" "alb-listener-http" {
 
 resource "aws_alb_listener" "alb-listener-https" {
   load_balancer_arn = aws_alb.alb.arn
-  protocol           = "HTTPS"
-  port               = 443
-  certificate_arn = aws_acm_certificate.acm-certificate.arn
-  
+  protocol          = "HTTPS"
+  port              = 443
+  certificate_arn   = aws_acm_certificate.acm-certificate.arn
+
   default_action {
     type = "fixed-response"
     fixed_response {
@@ -72,14 +72,14 @@ resource "aws_lb_listener_rule" "alb-listener-https-cdn-header-rule" {
   priority     = 100
 
   action {
-    type = "forward"
+    type             = "forward"
     target_group_arn = aws_alb_target_group.alb-target-group.arn
   }
 
   condition {
     http_header {
       http_header_name = "x-cdn-secret"
-      values          = [var.cdn_secret_header]
+      values           = [var.cdn_secret_header]
     }
   }
 }

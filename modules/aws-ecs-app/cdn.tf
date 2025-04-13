@@ -1,8 +1,13 @@
-resource "aws_cloudfront_origin_access_identity" "origin_access_identity" {
-
-}
-
+/*
+ * This file creates a CloudFront distribution for the application.
+ * It uses an Application Load Balancer (ALB) as the origin.
+ * The traffic between the client and CloudFront is encrypted using HTTPS.
+ * The traffic between CloudFront and the ALB is encrypted using HTTPS.
+*/
 resource "aws_cloudfront_distribution" "cdn_distribution" {
+  enabled = true
+  aliases = ["${var.service_name}.${var.environment}.${data.aws_route53_zone.provided-zone.name}"]
+
 
   origin {
     domain_name = "alb.${var.service_name}.${var.environment}.${data.aws_route53_zone.provided-zone.name}"
@@ -31,14 +36,14 @@ resource "aws_cloudfront_distribution" "cdn_distribution" {
 
   }
 
-  enabled = true
-  aliases                           = ["${var.service_name}.${var.environment}.${data.aws_route53_zone.provided-zone.name}"]
-
   default_cache_behavior {
-    allowed_methods  = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
-    cached_methods   = ["HEAD", "GET"]
-    target_origin_id = "${local.service_env_name}-origin"
-
+    allowed_methods        = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
+    cached_methods         = ["HEAD", "GET"]
+    target_origin_id       = "${local.service_env_name}-origin"
+    viewer_protocol_policy = "https-only"
+    min_ttl                = 0
+    default_ttl            = 3600
+    max_ttl                = 86400
     forwarded_values {
       query_string = true
       headers      = ["*"]
@@ -46,11 +51,6 @@ resource "aws_cloudfront_distribution" "cdn_distribution" {
         forward = "none"
       }
     }
-
-    viewer_protocol_policy = "redirect-to-https"
-    min_ttl                = 0
-    default_ttl            = 3600
-    max_ttl                = 86400
   }
 
   restrictions {
@@ -60,9 +60,8 @@ resource "aws_cloudfront_distribution" "cdn_distribution" {
   }
 
   viewer_certificate {
-    #cloudfront_default_certificate = true
-    ssl_support_method             = "sni-only"
-    acm_certificate_arn           = "${aws_acm_certificate.cdn-acm-certificate.arn}"
+    ssl_support_method  = "sni-only"
+    acm_certificate_arn = aws_acm_certificate.cdn-acm-certificate.arn
   }
 
   tags = {

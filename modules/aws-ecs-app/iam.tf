@@ -1,8 +1,7 @@
 /*
-  Creates the IAM roles and policies required for ECS tasks and services.
-  It also creates an S3 bucket for logging and sets up the necessary permissions for ALB and CloudFront to write logs to the bucket.
+ * This file creates the IAM roles and policies required for ECS tasks and services.
+ * It also creates an S3 bucket for logging and sets up the necessary permissions for ALB and CloudFront to write logs to the bucket.
 */
-
 data "aws_iam_policy_document" "iam-policy-document" {
   version = "2012-10-17"
   statement {
@@ -38,7 +37,7 @@ resource "aws_iam_role_policy_attachment" "iam_role_policy_attachment" {
 data "aws_elb_service_account" "elb_identity" {}
 
 resource "aws_s3_bucket" "bucket_logs" {
-  bucket = "${var.service_name}-${var.environment}-logs"
+  bucket        = "${var.service_name}-${var.environment}-logs"
   force_destroy = true
 }
 

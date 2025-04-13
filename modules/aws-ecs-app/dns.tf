@@ -1,6 +1,8 @@
-
-data "aws_route53_zone" "provided-zone"{
-  zone_id         = "${var.zone_id}"
+/*
+ * This file creates Route 53 records for the ALB and CloudFront distribution.
+*/
+data "aws_route53_zone" "provided-zone" {
+  zone_id      = var.zone_id
   private_zone = false
 }
 

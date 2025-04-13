@@ -36,5 +36,4 @@ variable "cdn_secret_header" {
 variable "zone_id" {
   description = "Route53 zone ID"
   type        = string
-  default = "Z097124130KYX9SYFMSZU"
 }
