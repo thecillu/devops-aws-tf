@@ -5,6 +5,7 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building...'
+                cd nodejs-app
                 docker build -t cillu/nodejs-app:latest .
                 docker push cillu/nodejs-app:latest
             }
