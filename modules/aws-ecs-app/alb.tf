@@ -5,7 +5,7 @@
 
 resource "aws_alb" "alb" {
   name            = "${local.service_env_name}-alb"
-  subnets         = aws_subnet.public_subnet.*.id
+  subnets         = aws_subnet.public_subnet[*].id
   security_groups = [aws_security_group.alb-security-group.id]
 
   access_logs {

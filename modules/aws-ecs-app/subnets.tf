@@ -42,7 +42,7 @@ resource "aws_route_table" "public_route_table" {
 
 resource "aws_route_table_association" "public_route_table_association" {
   count          = length(aws_subnet.public_subnet)
-  subnet_id      = element(aws_subnet.public_subnet.*.id, count.index)
+  subnet_id      = element(aws_subnet.public_subnet[*].id, count.index)
   route_table_id = aws_route_table.public_route_table.id
 }
 
@@ -71,7 +71,7 @@ resource "aws_eip" "nat_eip" {
 resource "aws_nat_gateway" "nat_gw" {
   count         = length(aws_subnet.public_subnet)
   allocation_id = aws_eip.nat_eip[count.index].id
-  subnet_id     = element(aws_subnet.public_subnet.*.id, count.index)
+  subnet_id     = element(aws_subnet.public_subnet[*].id, count.index)
   tags = {
     Name        = "${local.service_env_name}-nat-gw-${count.index}"
     Environment = var.environment
@@ -95,6 +95,6 @@ resource "aws_route_table" "private_route_table" {
 
 resource "aws_route_table_association" "private_route_table_association" {
   count          = length(aws_subnet.private_subnet)
-  subnet_id      = element(aws_subnet.private_subnet.*.id, count.index)
+  subnet_id      = element(aws_subnet.private_subnet[*].id, count.index)
   route_table_id = aws_route_table.private_route_table[count.index].id
 }

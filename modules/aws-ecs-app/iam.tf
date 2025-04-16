@@ -81,12 +81,12 @@ data "aws_iam_policy_document" "s3_bucket_logs_write" {
     effect = "Allow"
 
     resources = [
-      "${aws_s3_bucket.bucket_logs.arn}",
+      aws_s3_bucket.bucket_logs.arn,
       "${aws_s3_bucket.bucket_logs.arn}/*",
     ]
 
     principals {
-      identifiers = ["${data.aws_elb_service_account.elb_identity.arn}"]
+      identifiers = [data.aws_elb_service_account.elb_identity.arn]
       type        = "AWS"
     }
 
