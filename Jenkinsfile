@@ -13,6 +13,7 @@ pipeline {
                 userRemoteConfigs: [[url: 'https://github.com/thecillu/devops-aws-tf']], 
                 branches: [[name: 'refs/tags/v.0.2.0']]], changelog: false, poll: false
             }
+        }
         stage('Build') {
             steps {
                 echo 'Building...'
