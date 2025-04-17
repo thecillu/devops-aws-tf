@@ -17,9 +17,11 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
+                sh 'ls -al'
                 checkout scm: [$class: 'GitSCM', 
                 userRemoteConfigs: [[url: 'https://github.com/thecillu/devops-aws-tf']], 
                 branches: [[name: "refs/tags/${params.Tag}"]]], changelog: false, poll: false
+                sh 'ls -al'
             }
         }
         stage('Build') {
