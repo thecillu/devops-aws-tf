@@ -82,7 +82,6 @@ Assuming:
   - the provided zone_id
   - the app_secret_parameter = "mysecret"
 
-
 ### Deploy a dev stack in eu-central-1
 
 Define a file main.tf
