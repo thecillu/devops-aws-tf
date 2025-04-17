@@ -5,12 +5,12 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building...'
-                sh 'pwd'
-                sh 'ls -al'
-                sh 'cd nodejs-app'
-                sh 'ls -al'
-                sh 'docker build -t cillu/nodejs-app:latest .'
-                sh 'docker push cillu/nodejs-app:latest'
+                sh script:'''
+                    #!/bin/bash
+                    cd nodejs-app
+                    docker build -t cillu/nodejs-app:latest .
+                    docker push cillu/nodejs-app:latest
+                '''
             }
         }
         stage('Test') {
