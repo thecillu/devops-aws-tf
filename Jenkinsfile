@@ -7,6 +7,12 @@ pipeline {
     
     parameters {
         string (name: 'tag', defaultValue:'v0.1.0', description: 'Tag to checkout')
+        gitParameter type: 'PT_BRANCH_TAG',
+                    name: 'A_BRANCH_TAG',
+                    defaultValue: 'v0.1.0',
+                    description: 'Choose a tag to checkout',
+                    selectedValue: 'DEFAULT',
+                    sortMode: 'DESCENDING_SMART'
     }
 
     stages {
