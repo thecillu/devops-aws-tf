@@ -9,7 +9,6 @@ pipeline {
                     #!/bin/bash
                     cd nodejs-app
                     docker build -t cillu/nodejs-app:latest .
-                    docker push cillu/nodejs-app:latest
                 '''
             }
         }
@@ -21,6 +20,10 @@ pipeline {
         stage('Deploy') {
             steps {
                 echo 'Deploying...'
+                sh script:'''
+                    #!/bin/bash
+                    docker push cillu/nodejs-app:latest
+                '''
             }
         }
     }
