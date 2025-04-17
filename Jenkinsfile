@@ -22,6 +22,7 @@ pipeline {
                     checkout scm: [$class: 'GitSCM', 
                     userRemoteConfigs: [[url: 'https://github.com/thecillu/devops-aws-tf']], 
                     branches: [[name: "refs/tags/${params.Tag}"]]], changelog: false, poll: false
+                    sh 'pwd'
                     sh 'ls -al'
                 }
 
@@ -30,10 +31,12 @@ pipeline {
                     checkout scm: [$class: 'GitSCM', 
                     userRemoteConfigs: [[url: 'https://github.com/thecillu/devops-aws-tf']], 
                     branches: [[name: "refs/tags/v0.1.0"]]], changelog: false, poll: false
+                    sh 'pwd'
                     sh 'ls -al'
                 }
+                
+                sh 'pwd'
                 sh 'ls -al'
-                sh 'tree'
             }
         }
         stage('Build') {
