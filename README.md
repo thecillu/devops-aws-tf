@@ -84,6 +84,7 @@ Assuming:
 
 
 ### Deploy a dev stack in eu-central-1
+
 Define a file main.tf
 
 ```hcl
