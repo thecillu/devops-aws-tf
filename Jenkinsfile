@@ -1,11 +1,18 @@
 pipeline {
     agent any
 
-    triggers {
-        pollSCM 'H/1 * * * *'
-    }
+    //triggers {
+    //    pollSCM 'H/1 * * * *'
+    //}
     
     stages {
+
+        stage('Checkout') {
+            steps {
+                checkout scm: [$class: 'GitSCM', 
+                userRemoteConfigs: [[url: 'https://github.com/thecillu/devops-aws-tf']], 
+                branches: [[name: 'refs/tags/v.0.2.0']]], changelog: false, poll: false
+            }
         stage('Build') {
             steps {
                 echo 'Building...'
