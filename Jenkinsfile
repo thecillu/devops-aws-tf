@@ -5,7 +5,13 @@ pipeline {
     //    pollSCM 'H/1 * * * *'
     //}
     
+    parameters {
+        string (name: 'tag', defaultValue:'v0.1.0', description: 'Tag to checkout')
+    }
+
     stages {
+
+
 
         stage('Checkout') {
             steps {
