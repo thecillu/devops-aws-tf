@@ -8,6 +8,7 @@ pipeline {
                 sh 'pwd'
                 sh 'ls -al'
                 sh 'cd nodejs-app'
+                sh 'ls -al'
                 sh 'docker build -t cillu/nodejs-app:latest .'
                 sh 'docker push cillu/nodejs-app:latest'
             }
