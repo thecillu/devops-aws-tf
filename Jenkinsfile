@@ -6,9 +6,8 @@ pipeline {
     //}
     
     parameters {
-        string (name: 'tag', defaultValue:'v0.1.0', description: 'Tag to checkout')
-        gitParameter type: 'PT_BRANCH_TAG',
-                    name: 'A_BRANCH_TAG',
+        gitParameter type: 'PT_TAG',
+                    name: 'Tag',
                     defaultValue: 'v0.1.0',
                     description: 'Choose a tag to checkout',
                     selectedValue: 'DEFAULT',
@@ -16,14 +15,11 @@ pipeline {
     }
 
     stages {
-
-
-
         stage('Checkout') {
             steps {
                 checkout scm: [$class: 'GitSCM', 
                 userRemoteConfigs: [[url: 'https://github.com/thecillu/devops-aws-tf']], 
-                branches: [[name: 'refs/tags/v0.2.0']]], changelog: false, poll: false
+                branches: [[name: "refs/tags/${params.Tag}"]]], changelog: false, poll: false
             }
         }
         stage('Build') {
