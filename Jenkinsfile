@@ -42,21 +42,14 @@ pipeline {
 
         stage('Create Artifact') {
             steps {
-                script {
-                    // Create a tar.gz archive of the built application
-                    sh """
-                        cd nodejs-app
-                        tar -czf nodejs-app.tar.gz \
-                            --exclude=node_modules \
-                            --exclude=.git \
-                            --exclude=test \
-                            --exclude=*.log \
-                            .
-                    """
-                }
+                dir("app-dir"){
+                         sh 'tar -czf nodejs-app.tar.gz --exclude=node_modules  --exclude=.git  --exclude=test --exclude=*.log nodejs-app'
+                         sh 'ls -al'
+                    }
                 
                 // Archive the artifact
-                archiveArtifacts artifacts: "nodejs-app/nodejs-app.tar.gz", fingerprint: true
+                    archiveArtifacts artifacts: "nodejs-app.tar.gz", fingerprint: true
+                }
             }
         }
 
