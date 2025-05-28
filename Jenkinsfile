@@ -56,7 +56,7 @@ pipeline {
                 }
                 
                 // Archive the artifact
-                archiveArtifacts artifacts: "nodejs-app.tar.gz", fingerprint: true
+                archiveArtifacts artifacts: "nodejs-app/nodejs-app.tar.gz", fingerprint: true
             }
         }
 
