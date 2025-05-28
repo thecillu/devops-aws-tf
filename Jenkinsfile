@@ -46,10 +46,8 @@ pipeline {
                          sh 'tar -czf nodejs-app.tar.gz --exclude=node_modules  --exclude=.git  --exclude=test --exclude=*.log nodejs-app'
                          sh 'ls -al'
                     }
-                
+                archiveArtifacts artifacts: "app-dir/nodejs-app.tar.gz", fingerprint: true
                 // Archive the artifact
-                    archiveArtifacts artifacts: "nodejs-app.tar.gz", fingerprint: true
-                }
             }
         }
 
